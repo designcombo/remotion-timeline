@@ -18,6 +18,7 @@ interface RulerProps {
   scrollPos?: number;
   textFormat?: (scale: number) => string;
   scrollLeft?: number;
+  onClick?: (units: number) => void;
 }
 
 const Ruler = (props: RulerProps) => {
@@ -28,7 +29,8 @@ const Ruler = (props: RulerProps) => {
     offsetX = TIMELINE_OFFSET_X,
     textOffsetY = 12, // Place the text above the lines but inside the canvas
     textFormat = formatTimelineUnit,
-    scrollLeft: scrollPos = 0
+    scrollLeft: scrollPos = 0,
+    onClick
   } = props;
   const { scale } = useStore();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -155,6 +157,21 @@ const Ruler = (props: RulerProps) => {
     context.restore();
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Get the bounding box of the canvas to calculate the relative click position
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+
+    // Calculate total x position, including scrollPos
+    const totalX = clickX + scrollPos - TIMELINE_OFFSET_X;
+
+    onClick?.(totalX);
+    // Here you can handle the result as needed
+  };
+
   return (
     <div
       className="border-t border-border"
@@ -166,9 +183,9 @@ const Ruler = (props: RulerProps) => {
       }}
     >
       <canvas
+        onClick={handleClick}
         ref={canvasRef}
         height={canvasSize.height}
-        style={{ pointerEvents: "none" }}
       />
     </div>
   );

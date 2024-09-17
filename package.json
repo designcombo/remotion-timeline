@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@designcombo/events": "0.1.0",
-    "@designcombo/timeline": "0.1.0",
+    "@designcombo/events": "0.1.1",
+    "@designcombo/timeline": "0.1.1",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",

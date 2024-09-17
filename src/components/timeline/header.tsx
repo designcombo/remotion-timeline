@@ -1,13 +1,25 @@
 import { Button } from "@/components/ui/button";
-import { TIMELINE_SCALE_CHANGED, dispatch } from "@designcombo/events";
-import { frameToTimeString, timeToString } from "@/utils/time";
+import {
+  ACTIVE_CLONE,
+  ACTIVE_DELETE,
+  ACTIVE_SPLIT,
+  TIMELINE_SCALE_CHANGED,
+  dispatch
+} from "@designcombo/events";
+import { frameToTimeString, getCurrentTime, timeToString } from "@/utils/time";
 import useStore from "@/store/store";
-import { SquareSplitHorizontal, Trash, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  Copy,
+  SquareSplitHorizontal,
+  Trash,
+  ZoomIn,
+  ZoomOut
+} from "lucide-react";
 import { getNextZoomLevel, getPreviousZoomLevel } from "@/utils/timeline";
 import { useCurrentPlayerFrame } from "@/hooks/use-current-frame";
 
 const Header = () => {
-  const { duration, fps, scale, playerRef } = useStore();
+  const { duration, fps, scale, playerRef, activeIds } = useStore();
   const currentFrame = useCurrentPlayerFrame(playerRef!);
 
   const onZoomOutClick = () => {
@@ -25,6 +37,23 @@ const Header = () => {
     dispatch(TIMELINE_SCALE_CHANGED, {
       payload: {
         scale: nextZoom
+      }
+    });
+  };
+
+  const doActiveClone = () => {
+    dispatch(ACTIVE_CLONE);
+  };
+
+  const doActiveDelete = () => {
+    dispatch(ACTIVE_DELETE);
+  };
+
+  const doActiveSplit = () => {
+    dispatch(ACTIVE_SPLIT, {
+      payload: {},
+      options: {
+        time: getCurrentTime()
       }
     });
   };
@@ -55,10 +84,28 @@ const Header = () => {
           }}
         >
           <div className="px-4">
-            <Button variant={"ghost"} size={"icon"}>
+            <Button
+              disabled={!activeIds.length}
+              onClick={doActiveDelete}
+              variant={"ghost"}
+              size={"icon"}
+            >
               <Trash size={18} />
             </Button>
-            <Button variant={"ghost"} size={"icon"}>
+            <Button
+              disabled={!activeIds.length}
+              onClick={doActiveClone}
+              variant={"ghost"}
+              size={"icon"}
+            >
+              <Copy size={18} />
+            </Button>
+            <Button
+              disabled={!activeIds.length}
+              onClick={doActiveSplit}
+              variant={"ghost"}
+              size={"icon"}
+            >
               <SquareSplitHorizontal size={18} />
             </Button>
           </div>
@@ -78,6 +125,7 @@ const Header = () => {
                 display: "flex",
                 justifyContent: "center"
               }}
+              data-current-time={currentFrame / fps}
               id="video-current-time"
             >
               {frameToTimeString({ frame: currentFrame }, { fps })}

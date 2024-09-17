@@ -1,6 +1,8 @@
 import useStore from "@/store/store";
 import { useEffect } from "react";
 import {
+  LAYER_PREFIX,
+  LAYER_SELECTION,
   PLAYER_PAUSE,
   PLAYER_PLAY,
   PLAYER_PREFIX,
@@ -58,6 +60,22 @@ const useTimelineEvents = () => {
       }
     });
     return () => trackAndTrackItemsSubscription.unsubscribe();
+  }, [timeline]);
+
+  // handle selection events
+  useEffect(() => {
+    const selectionEvents = subject.pipe(
+      filter(({ key }) => key.startsWith(LAYER_PREFIX))
+    );
+
+    const selectionSubscription = selectionEvents.subscribe((obj) => {
+      if (obj.key === LAYER_SELECTION) {
+        setState({
+          activeIds: obj.value?.payload.activeIds
+        });
+      }
+    });
+    return () => selectionSubscription.unsubscribe();
   }, [timeline]);
 };
 

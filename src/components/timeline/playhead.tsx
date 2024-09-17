@@ -1,7 +1,7 @@
 import { useCurrentPlayerFrame } from "@/hooks/use-current-frame";
 import useStore from "@/store/store";
 import { timeMsToUnits, unitsToTimeMs } from "@designcombo/timeline";
-import { useEffect, useRef, useState } from "react";
+import { MouseEvent, TouchEvent, useEffect, useRef, useState } from "react";
 
 const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
   const playheadRef = useRef<HTMLDivElement>(null);
@@ -17,15 +17,23 @@ const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
     setIsDragging(false);
   };
 
-  const handleMouseDown = (e: any) => {
+  const handleMouseDown = (
+    e:
+      | MouseEvent<HTMLDivElement, globalThis.MouseEvent>
+      | TouchEvent<HTMLDivElement>
+  ) => {
     setIsDragging(true);
-    setDragStartX(e.clientX);
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    setDragStartX(clientX);
     setDragStartPosition(position);
   };
 
-  const handleMouseMove = (e: any) => {
+  const handleMouseMove = (
+    e: globalThis.MouseEvent | globalThis.TouchEvent
+  ) => {
     if (isDragging) {
-      const delta = e.clientX - dragStartX;
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+      const delta = clientX - dragStartX;
       const newPosition = dragStartPosition + delta;
 
       const time = unitsToTimeMs(newPosition, scale.zoom);
@@ -37,22 +45,29 @@ const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchmove", handleMouseMove);
+      document.addEventListener("touchend", handleMouseUp);
     } else {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleMouseMove);
+      document.removeEventListener("touchend", handleMouseUp);
     }
 
     // Cleanup event listeners on component unmount
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleMouseMove);
+      document.removeEventListener("touchend", handleMouseUp);
     };
   }, [isDragging]);
 
   return (
     <div
       ref={playheadRef}
-      onMouseDown={handleMouseDown}
+      onMouseDown={(e) => handleMouseDown(e)}
+      onTouchStart={(e) => handleMouseDown(e)}
       style={{
         position: "absolute",
         left: 40 + position,

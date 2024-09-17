@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Header from "./header";
 import Ruler from "./ruler";
-import CanvasTimeline, { timeMsToUnits } from "@designcombo/timeline";
+import CanvasTimeline, {
+  timeMsToUnits,
+  unitsToTimeMs
+} from "@designcombo/timeline";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import {
   TIMELINE_BOUNDING_CHANGED,
@@ -44,7 +47,7 @@ const Timeline = () => {
     const canvasBoudingX =
       canvasElRef.current?.getBoundingClientRect().x! +
       canvasElRef.current?.clientWidth!;
-    const playHeadPos = position - scrollLeft;
+    const playHeadPos = position - scrollLeft + 40;
     if (playHeadPos >= canvasBoudingX) {
       const scrollDivWidth = horizontalScrollbarVpRef.current?.clientWidth!;
       const totalScrollWidth = horizontalScrollbarVpRef.current?.scrollWidth!;
@@ -137,10 +140,18 @@ const Timeline = () => {
     };
   }, []);
 
+  const onClickRuler = (units: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const time = unitsToTimeMs(units, scale.zoom);
+    playerRef?.current?.seekTo((time * fps) / 1000);
+  };
+
   return (
     <div className="relative overflow-hidden">
       <Header />
-      <Ruler scrollLeft={scrollLeft} />
+      <Ruler onClick={onClickRuler} scrollLeft={scrollLeft} />
       <Playhead scrollLeft={scrollLeft} />
       <div className="flex">
         <div className="relative w-10 flex-none"></div>

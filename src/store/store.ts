@@ -19,7 +19,7 @@ interface ITimelineStore {
   transitionIds: string[];
   transitionsMap: Record<string, ITransition>;
   trackItemsMap: Record<string, ITrackItem>;
-
+  activeIds: string[];
   timeline: CanvasTimeline | null;
   setTimeline: (timeline: CanvasTimeline) => void;
   setScale: (scale: ITimelineScaleState) => void;
@@ -32,7 +32,7 @@ interface ITimelineStore {
 
 const useStore = create<ITimelineStore>((set) => ({
   timeline: null,
-  duration: 30000,
+  duration: 5000,
   fps: 30,
   scale: {
     unit: 60,
