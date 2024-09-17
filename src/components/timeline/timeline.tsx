@@ -16,6 +16,14 @@ import useStore from "@/store/store";
 import { handleEvents } from "@designcombo/timeline";
 import Playhead from "./playhead";
 import { useCurrentPlayerFrame } from "@/hooks/use-current-frame";
+import { Audio, Image, Text, Video } from "./items";
+
+CanvasTimeline.registerItems({
+  Text,
+  Image,
+  Audio,
+  Video
+});
 
 const Timeline = () => {
   const [scrollLeft, setScrollLeft] = useState(0);

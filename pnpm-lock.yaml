@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@designcombo/events':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.1.2
+        version: 0.1.2
       '@designcombo/timeline':
-        specifier: 0.1.1
-        version: 0.1.1(@designcombo/events@0.1.1)
+        specifier: 0.1.2
+        version: 0.1.2(@designcombo/events@0.1.2)
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -224,13 +224,13 @@ packages:
     resolution: {integrity: sha512-YTnYtra7W9e6/oAZEHj0bJehPRUlLH9/fbpT5LfB0NhQXyALCRkRs3zH9v07IYhkgpqX6Z78FnuccZr/l4Fs4Q==}
     engines: {node: '>=6.9.0'}
 
-  '@designcombo/events@0.1.1':
-    resolution: {integrity: sha512-u0FF1d9cqwSQ+DVJARuLjNR9A7BfuneD5Dv7Hop7o9QpKY4eLOmJUbKBVcNs2Tepe1SuMk9tl7lB4BK/yCBcgQ==}
+  '@designcombo/events@0.1.2':
+    resolution: {integrity: sha512-YYOG2l6I+MVJ8BRb8fmUfRotzNYE48i1ip30qpsX80Gs3k/0PEJxjNNY8LWVvX210VDByfqZmQLI3nRjbkuWFg==}
 
-  '@designcombo/timeline@0.1.1':
-    resolution: {integrity: sha512-nUhtaorKk9Cgs7pumCSpos96/dotnTRMlkHYCk3gjty4khl1fUfB085KEJf2ko+BUlvNMRGdscIttCFzlXA2fQ==}
+  '@designcombo/timeline@0.1.2':
+    resolution: {integrity: sha512-M2mkomnFnoSrVhszfYk8tjwMbW3cWLHaXdmRFA5zgU+rCSeLf9JKDQtdy1XoLKRVeXE7VyauUG4bzRpmOHYvlQ==}
     peerDependencies:
-      '@designcombo/events': 0.1.1
+      '@designcombo/events': 0.1.2
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -2452,13 +2452,13 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
 
-  '@designcombo/events@0.1.1':
+  '@designcombo/events@0.1.2':
     dependencies:
       rxjs: 7.8.1
 
-  '@designcombo/timeline@0.1.1(@designcombo/events@0.1.1)':
+  '@designcombo/timeline@0.1.2(@designcombo/events@0.1.2)':
     dependencies:
-      '@designcombo/events': 0.1.1
+      '@designcombo/events': 0.1.2
       es-toolkit: 1.16.0
       fabric: 6.3.0
       nanoid: 5.0.7
