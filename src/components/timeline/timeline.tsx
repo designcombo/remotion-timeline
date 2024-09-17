@@ -1,0 +1,219 @@
+import { useEffect, useRef, useState } from "react";
+import Header from "./header";
+import Ruler from "./ruler";
+import CanvasTimeline, { timeMsToUnits } from "@designcombo/timeline";
+import * as ScrollArea from "@radix-ui/react-scroll-area";
+import {
+  TIMELINE_BOUNDING_CHANGED,
+  TIMELINE_PREFIX,
+  filter,
+  subject
+} from "@designcombo/events";
+import useStore from "@/store/store";
+import { handleEvents } from "@designcombo/timeline";
+import Playhead from "./playhead";
+import { useCurrentPlayerFrame } from "@/hooks/use-current-frame";
+
+const Timeline = () => {
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasElRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<CanvasTimeline | null>(null);
+  const verticalScrollbarVpRef = useRef<HTMLDivElement>(null);
+  const horizontalScrollbarVpRef = useRef<HTMLDivElement>(null);
+  const { scale, playerRef, fps } = useStore();
+  const store = useStore();
+  const currentFrame = useCurrentPlayerFrame(playerRef!);
+
+  const [size, setSize] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0
+  });
+
+  const { setTimeline } = useStore();
+  const onScroll = (v: { scrollTop: number; scrollLeft: number }) => {
+    if (horizontalScrollbarVpRef.current && verticalScrollbarVpRef.current) {
+      verticalScrollbarVpRef.current.scrollTop = -v.scrollTop;
+      horizontalScrollbarVpRef.current.scrollLeft = -v.scrollLeft;
+      setScrollLeft(-v.scrollLeft);
+    }
+  };
+
+  useEffect(() => {
+    const position = timeMsToUnits((currentFrame / fps) * 1000, scale.zoom);
+    const canvasBoudingX =
+      canvasElRef.current?.getBoundingClientRect().x! +
+      canvasElRef.current?.clientWidth!;
+    const playHeadPos = position - scrollLeft;
+    if (playHeadPos >= canvasBoudingX) {
+      const scrollDivWidth = horizontalScrollbarVpRef.current?.clientWidth!;
+      const totalScrollWidth = horizontalScrollbarVpRef.current?.scrollWidth!;
+      const currentPosScroll = horizontalScrollbarVpRef.current?.scrollLeft!;
+      const availableScroll =
+        totalScrollWidth - (scrollDivWidth + currentPosScroll);
+      const scaleScroll = availableScroll / scrollDivWidth;
+      if (scaleScroll >= 0) {
+        if (scaleScroll > 1)
+          horizontalScrollbarVpRef.current?.scrollTo({
+            left: currentPosScroll + scrollDivWidth
+          });
+        else
+          horizontalScrollbarVpRef.current?.scrollTo({
+            left: totalScrollWidth - scrollDivWidth
+          });
+      }
+    }
+  }, [currentFrame]);
+
+  useEffect(() => {
+    const canvasEl = canvasElRef.current;
+    const containerEl = containerRef.current;
+    if (!canvasEl || !containerEl) return;
+
+    const containerWidth = containerEl.clientWidth;
+    const containerHeight = containerEl.clientHeight;
+
+    const canvas = new CanvasTimeline(canvasEl, {
+      width: containerWidth,
+      height: containerHeight,
+      bounding: {
+        width: containerWidth,
+        height: 0
+      },
+      selectionColor: "rgba(0, 216, 214,0.1)",
+      selectionBorderColor: "rgba(0, 216, 214,1.0)",
+      onScroll,
+      tScale: scale.zoom,
+      store
+    });
+
+    const eventsHandler = handleEvents(canvas);
+
+    canvasRef.current = canvas;
+
+    setSize({
+      width: containerWidth,
+      height: 0
+    });
+    setTimeline(canvas);
+
+    return () => {
+      eventsHandler.unsubscribe();
+      canvas.purge();
+    };
+  }, []);
+
+  const handleOnScrollH = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    const scrollLeft = e.currentTarget.scrollLeft;
+    const canvas = canvasRef.current!;
+    canvas.scrollTo({ scrollLeft });
+    setScrollLeft(scrollLeft);
+  };
+
+  const handleOnScrollV = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    const canvas = canvasRef.current!;
+    canvas.scrollTo({ scrollTop });
+  };
+
+  useEffect(() => {
+    const addEvents = subject.pipe(
+      filter(({ key }) => key.startsWith(TIMELINE_PREFIX))
+    );
+
+    const subscription = addEvents.subscribe((obj) => {
+      if (obj.key === TIMELINE_BOUNDING_CHANGED) {
+        const bounding = obj.value?.payload?.bounding;
+        if (bounding) {
+          setSize({
+            width: bounding.width,
+            height: bounding.height
+          });
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return (
+    <div className="relative overflow-hidden">
+      <Header />
+      <Ruler scrollLeft={scrollLeft} />
+      <Playhead scrollLeft={scrollLeft} />
+      <div className="flex">
+        <div className="relative w-10 flex-none"></div>
+        <div className="relative h-60 flex-1 ">
+          <div
+            ref={containerRef}
+            className="text-white text-sm h-60 absolute top-0 w-full "
+          >
+            <canvas ref={canvasElRef} />
+          </div>
+          <ScrollArea.Root
+            type="always"
+            style={{
+              position: "absolute",
+              width: "calc(100vw - 40px)",
+              height: "10px"
+            }}
+            className="ScrollAreaRootH"
+          >
+            <ScrollArea.Viewport
+              onScroll={handleOnScrollH}
+              className="ScrollAreaViewport"
+              id="viewportH"
+              ref={horizontalScrollbarVpRef}
+            >
+              <div
+                style={{
+                  width: size.width
+                }}
+                className="pointer-events-none  h-[10px]"
+              ></div>
+            </ScrollArea.Viewport>
+
+            <ScrollArea.Scrollbar
+              className="ScrollAreaScrollbar"
+              orientation="horizontal"
+            >
+              <ScrollArea.Thumb className="ScrollAreaThumb" />
+            </ScrollArea.Scrollbar>
+          </ScrollArea.Root>
+
+          <ScrollArea.Root
+            type="always"
+            style={{
+              position: "absolute",
+              height: "240px",
+              width: "10px"
+            }}
+            className="ScrollAreaRootV"
+          >
+            <ScrollArea.Viewport
+              onScroll={handleOnScrollV}
+              className="ScrollAreaViewport"
+              ref={verticalScrollbarVpRef}
+            >
+              <div
+                style={{
+                  height: size.height
+                }}
+                className="pointer-events-none  w-[10px]"
+              ></div>
+            </ScrollArea.Viewport>
+            <ScrollArea.Scrollbar
+              className="ScrollAreaScrollbar"
+              orientation="vertical"
+            >
+              <ScrollArea.Thumb className="ScrollAreaThumb" />
+            </ScrollArea.Scrollbar>
+          </ScrollArea.Root>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Timeline;
