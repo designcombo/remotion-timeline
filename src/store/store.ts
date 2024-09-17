@@ -4,7 +4,7 @@ import CanvasTimeline, {
   ITimelineScrollState,
   ITrack,
   ITrackItem,
-  ITransition
+  ITransition,
 } from "@designcombo/timeline";
 import { PlayerRef } from "@remotion/player";
 import { create } from "zustand";
@@ -38,11 +38,11 @@ const useStore = create<ITimelineStore>((set) => ({
   scale: {
     unit: 60,
     zoom: 1 / 90,
-    segments: 5
+    segments: 5,
   },
   scroll: {
     left: 0,
-    top: 0
+    top: 0,
   },
   playerRef: null,
 
@@ -55,22 +55,22 @@ const useStore = create<ITimelineStore>((set) => ({
   trackItemsMap: {},
 
   setTimeline: (timeline: CanvasTimeline) =>
-    set((state) => ({
-      timeline: timeline
+    set(() => ({
+      timeline: timeline,
     })),
   setScale: (scale: ITimelineScaleState) =>
-    set((state) => ({
-      scale: scale
+    set(() => ({
+      scale: scale,
     })),
   setScroll: (scroll: ITimelineScrollState) =>
-    set((state) => ({
-      scroll: scroll
+    set(() => ({
+      scroll: scroll,
     })),
   setState: async (state) => {
     return set({ ...state });
   },
   setPlayerRef: (playerRef: React.RefObject<PlayerRef> | null) =>
-    set({ playerRef })
+    set({ playerRef }),
 }));
 
 export default useStore;

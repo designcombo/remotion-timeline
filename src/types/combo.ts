@@ -129,14 +129,6 @@ export interface IMetadata {
   order: number;
 }
 
-type TextAlign = "left" | "right" | "center" | "justify";
-type FontWeight = "normal" | "bold" | "bolder" | "lighter" | number; // number for values like 100, 200, etc.
-type TextDecoration = "none" | "underline" | "overline" | "line-through";
-type TextTransform = "none" | "capitalize" | "uppercase" | "lowercase";
-type FontStyle = "normal" | "italic" | "oblique";
-type Display = "block" | "inline" | "inline-block" | "flex" | "grid";
-type Position = "static" | "relative" | "absolute" | "fixed" | "sticky";
-
 interface ICommonDetails {
   width?: number;
   height?: number;
