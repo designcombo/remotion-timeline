@@ -104,7 +104,7 @@ const App = () => {
   };
   return (
     <div className=" flex flex-col h-screen">
-      <div className=" bg-zinc-950 flex-1 flex flex-col items-center justify-center">
+      <div className=" bg-background flex-1 flex flex-col items-center justify-center">
         <div className="max-w-3xl flex-1  w-full h-full flex">
           <Player />
         </div>

@@ -56,9 +56,9 @@ const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
       style={{
         position: "absolute",
         left: 40 + position,
-        top: 50,
+        top: 80,
         width: 1,
-        height: "calc(100% - 50px)",
+        height: "calc(100% - 80px)",
         background: "#d4d4d8",
         zIndex: 10,
         cursor: "pointer"
@@ -66,12 +66,21 @@ const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
     >
       <div className="relative h-full">
         <div className="absolute top-0  transform -translate-x-1/2 w-3 h-full "></div>
+        <div className="absolute top-0  transform -translate-x-1/2 w-0.5 h-full bg-white/50"></div>
+
         <div
           style={{
             borderRadius: "0 0 20px 20px"
           }}
-          className="absolute transform -translate-x-1/2 px-1.5 h-5 bg-white"
-        ></div>
+          className="absolute transform -translate-x-1/2 px-1.5 h-3"
+        >
+          <svg height="12" viewBox="0 0 12 12" fill="none">
+            <path
+              fill="currentColor"
+              d="M11.6585 7.04881L6.6585 11.4238C6.28148 11.7537 5.71852 11.7537 5.3415 11.4238L0.341495 7.04881C0.12448 6.85892 0 6.58459 0 6.29623V1C0 0.447715 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V6.29623C12 6.58459 11.8755 6.85892 11.6585 7.04881Z"
+            ></path>
+          </svg>
+        </div>
       </div>
     </div>
   );

@@ -94,7 +94,6 @@ export const SequenceItem: Record<
     const { from, durationInFrames } = calculateFrames(item.display, fps);
     const trim = item.trim!;
 
-    // console.log({ item });
     const crop = item.details?.crop || {
       x: 0,
       y: 0,

@@ -22,11 +22,11 @@ interface RulerProps {
 
 const Ruler = (props: RulerProps) => {
   const {
-    height = 40,
-    longLineSize = 14,
-    shortLineSize = 8,
+    height = 40, // Increased height to give space for the text
+    longLineSize = 8,
+    shortLineSize = 6,
     offsetX = TIMELINE_OFFSET_X,
-    textOffsetY = 20,
+    textOffsetY = 12, // Place the text above the lines but inside the canvas
     textFormat = formatTimelineUnit,
     scrollLeft: scrollPos = 0
   } = props;
@@ -36,7 +36,7 @@ const Ruler = (props: RulerProps) => {
     useState<CanvasRenderingContext2D | null>(null);
   const [canvasSize, setCanvasSize] = useState({
     width: 0,
-    height: height || 40
+    height: height // Increased height for text space
   });
 
   useEffect(() => {
@@ -97,37 +97,7 @@ const Ruler = (props: RulerProps) => {
     const maxRange = Math.ceil((scrollPos + width) / zoomUnit);
     const length = maxRange - minRange;
 
-    // Draw long and short lines
-    context.moveTo(0, 0);
-    context.lineTo(width, 0);
-
-    for (let i = 0; i <= length; ++i) {
-      const value = i + minRange;
-
-      if (value < 0) continue;
-
-      const startValue = value * zoomUnit;
-      const startPos = startValue - scrollPos + offsetX;
-
-      for (let j = 0; j < segments; ++j) {
-        const pos = startPos + (j / segments) * zoomUnit;
-
-        if (pos < 0 || pos >= width) continue;
-
-        const lineSize = j % segments ? shortLineSize : longLineSize;
-        const origin = 0;
-
-        const [x1, y1] = [pos, origin];
-        const [x2, y2] = [x1, y1 + lineSize];
-
-        context.moveTo(x1, y1);
-        context.lineTo(x2, y2);
-      }
-    }
-
-    context.stroke();
-
-    // Draw text
+    // Draw text before drawing the lines
     for (let i = 0; i <= length; ++i) {
       const value = i + minRange;
 
@@ -142,17 +112,56 @@ const Ruler = (props: RulerProps) => {
       // Calculate the textOffsetX value
       const textWidth = context.measureText(text).width;
       const textOffsetX = -textWidth / 2;
+
+      // Adjust textOffsetY so it stays inside the canvas but above the lines
       context.fillText(text, startPos + textOffsetX + offsetX, textOffsetY);
+    }
+
+    // Draw long and short lines after the text
+    for (let i = 0; i <= length; ++i) {
+      const value = i + minRange;
+
+      if (value < 0) continue;
+
+      const startValue = value * zoomUnit;
+      const startPos = startValue - scrollPos + offsetX;
+
+      for (let j = 0; j < segments; ++j) {
+        const pos = startPos + (j / segments) * zoomUnit;
+
+        if (pos < 0 || pos >= width) continue;
+
+        const lineSize = j % segments ? shortLineSize : longLineSize;
+
+        // Set color based on line size
+        if (lineSize === shortLineSize) {
+          context.strokeStyle = "#a1a1aa"; // Yellow for short lines
+        } else {
+          context.strokeStyle = "#d4d4d8"; // Red for long lines
+        }
+
+        const origin = 32; // Increase the origin to start lines lower, below the text
+
+        const [x1, y1] = [pos, origin];
+        const [x2, y2] = [x1, y1 + lineSize];
+
+        context.beginPath(); // Begin a new path for each line
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.stroke(); // Draw the line
+      }
     }
 
     context.restore();
   };
+
   return (
     <div
+      className="border-t border-border"
       style={{
         position: "relative",
         width: "100%",
-        height: "40px",
+        height: `${canvasSize.height}px`,
         backgroundColor: "transparent"
       }}
     >

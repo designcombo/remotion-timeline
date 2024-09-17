@@ -1,4 +1,4 @@
-import { ITrack } from "@/types/combo";
+import { ITrack } from "@designcombo/timeline";
 
 // Function to remove specified items from the tracks array
 export function removeItemsFromTrack(

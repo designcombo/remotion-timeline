@@ -1,10 +1,9 @@
-import { IDesign } from "@/types/combo";
 import CanvasTimeline, {
   ITimelineScaleState,
   ITimelineScrollState,
   ITrack,
   ITrackItem,
-  ITransition,
+  ITransition
 } from "@designcombo/timeline";
 import { PlayerRef } from "@remotion/player";
 import { create } from "zustand";
@@ -28,7 +27,7 @@ interface ITimelineStore {
   playerRef: React.RefObject<PlayerRef> | null;
   setPlayerRef: (playerRef: React.RefObject<PlayerRef> | null) => void;
 
-  setState: (state: IDesign) => Promise<void>;
+  setState: (state: any) => Promise<void>;
 }
 
 const useStore = create<ITimelineStore>((set) => ({
@@ -38,11 +37,11 @@ const useStore = create<ITimelineStore>((set) => ({
   scale: {
     unit: 60,
     zoom: 1 / 90,
-    segments: 5,
+    segments: 5
   },
   scroll: {
     left: 0,
-    top: 0,
+    top: 0
   },
   playerRef: null,
 
@@ -56,21 +55,21 @@ const useStore = create<ITimelineStore>((set) => ({
 
   setTimeline: (timeline: CanvasTimeline) =>
     set(() => ({
-      timeline: timeline,
+      timeline: timeline
     })),
   setScale: (scale: ITimelineScaleState) =>
     set(() => ({
-      scale: scale,
+      scale: scale
     })),
   setScroll: (scroll: ITimelineScrollState) =>
     set(() => ({
-      scroll: scroll,
+      scroll: scroll
     })),
   setState: async (state) => {
     return set({ ...state });
   },
   setPlayerRef: (playerRef: React.RefObject<PlayerRef> | null) =>
-    set({ playerRef }),
+    set({ playerRef })
 }));
 
 export default useStore;

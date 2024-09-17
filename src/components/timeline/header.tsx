@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { TIMELINE_SCALE_CHANGED, dispatch } from "@designcombo/events";
 import { frameToTimeString, timeToString } from "@/utils/time";
 import useStore from "@/store/store";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { SquareSplitHorizontal, Trash, ZoomIn, ZoomOut } from "lucide-react";
 import { getNextZoomLevel, getPreviousZoomLevel } from "@/utils/timeline";
 import { useCurrentPlayerFrame } from "@/hooks/use-current-frame";
 
@@ -49,19 +49,27 @@ const Header = () => {
           style={{
             height: 50,
             width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            flex: "none",
+            display: "grid",
+            gridTemplateColumns: "1fr 200px 1fr",
             alignItems: "center"
           }}
         >
+          <div className="px-4">
+            <Button variant={"ghost"} size={"icon"}>
+              <Trash size={18} />
+            </Button>
+            <Button variant={"ghost"} size={"icon"}>
+              <SquareSplitHorizontal size={18} />
+            </Button>
+          </div>
           <div
-            className="text-sm font-light"
+            className="text-sm font-light "
             style={{
               display: "grid",
               alignItems: "center",
               gridTemplateColumns: "72px 8px 72px",
-              paddingTop: "2px"
+              paddingTop: "2px",
+              justifyContent: "center"
             }}
           >
             <div
@@ -86,7 +94,7 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="flex items-center px-4">
+          <div className="flex justify-end items-center px-4">
             <Button size={"icon"} variant={"ghost"} onClick={onZoomOutClick}>
               <ZoomOut size={20} />
             </Button>
